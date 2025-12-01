@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Vulnerability 1: Buffer Overflow
+void buffer_overflow_example(char *input) {
+    char buffer[10];
+    strcpy(buffer, input);  // No bounds checking
+    printf("Buffer contains: %s\n", buffer);
+}
+
+// Vulnerability 2: Format String Vulnerability
+void format_string_vuln(char *user_input) {
+    printf(user_input);  // Directly using user input as format string
+}
+
+// Vulnerability 3: SQL Injection (simulated)
+void sql_injection_example(char *username) {
+    char query[256];
+    sprintf(query, "SELECT * FROM users WHERE name = '%s'", username);
+    printf("Executing query: %s\n", query);
+}
+
+// Vulnerability 4: Command Injection
+void command_injection(char *filename) {
+    char cmd[256];
+    sprintf(cmd, "cat %s", filename);
+    system(cmd);  // Executing shell command with user input
+}
+
+// Vulnerability 5: Integer Overflow
+void integer_overflow(int size) {
+    int total = size + 100;  // No overflow check
+    char *buffer = malloc(total);
+    if (buffer) {
+        memset(buffer, 'A', total);
+        free(buffer);
+    }
+}
+
+// Vulnerability 6: Use After Free
+void use_after_free() {
+    char *ptr = malloc(20);
+    strcpy(ptr, "Hello");
+    free(ptr);
+    printf("%s\n", ptr);  // Using memory after free
+}
+
+// Vulnerability 7: NULL Pointer Dereference
+void null_pointer_deref(char *input) {
+    char *ptr = NULL;
+    if (strlen(input) > 5) {
+        ptr = malloc(10);
+    }
+    strcpy(ptr, input);  // ptr might be NULL
+}
+
+// Vulnerability 8: Memory Leak
+void memory_leak(int count) {
+    for (int i = 0; i < count; i++) {
+        char *data = malloc(100);
+        // Never freed
+    }
+}
+
+// Vulnerability 9: Race Condition (simplified)
+int global_counter = 0;
+
+void race_condition() {
+    global_counter++;  // Not thread-safe
+}
+
+// Vulnerability 10: Hardcoded Credentials
+void hardcoded_credentials() {
+    char *password = "admin123";
+    char *api_key = "sk_live_1234567890abcdef";
+    printf("Connecting with credentials...\n");
+}
+
+int main(int argc, char *argv[]) {
+    printf("=== Vulnerable C Code for SAST Testing ===\n\n");
+    
+    // Test cases
+    if (argc > 1) {
+        buffer_overflow_example(argv[1]);
+    }
+    
+    char input[] = "%s%s%s%s";
+    format_string_vuln(input);
+    
+    sql_injection_example("admin' OR '1'='1");
+    
+    command_injection("file.txt; rm -rf /");
+    
+    integer_overflow(2147483647);
+    
+    use_after_free();
+    
+    null_pointer_deref("test");
+    
+    memory_leak(10);
+    
+    hardcoded_credentials();
+    
+    return 0;
+}
